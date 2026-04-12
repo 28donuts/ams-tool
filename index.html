@@ -191,6 +191,8 @@ function buildPrompt(){
 
   return `AML/KYC screening. Soggetto: ${nome}, ${anno}${luogo?', '+luogo:''}${res?', residente '+res:''}, CF: ${cf||'n.d.'}. Categorie: ${cats}.
 
+REGOLA CRITICA: attribuisci un risultato al soggetto SOLO se il nome corrisponde esattamente a "${nome}". Nomi simili, omonimi parziali o persone citate nello stesso articolo NON sono il soggetto. In caso di dubbio marca ⚠️ mai ✅.
+
 Cerca online (fonti .it gratuite: ANSA, IlFatto, SkyTG24, portali *Today, ANAC, GazzettaUfficiale) combinando il nome con: ${luogoRes?luogoRes+', ':''}termini giudiziari (indagato/arrestato/condannato), reati (truffa/frode/riciclaggio/corruzione/mafia/camorra/ndrangheta/bancarotta/fallimento), PA/appalti/ANAC, forze ordine. Min 8 ricerche distinte.
 
 Fonte: [Testata](url) se hai l'URL diretto, altrimenti solo nome testata. No URL inventati.
