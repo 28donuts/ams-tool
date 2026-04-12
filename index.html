@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Adverse Media Screening — KYC/AML</title>
+<link rel="icon" type="image/x-icon" href="favicon.ico">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;700&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -88,6 +89,7 @@ main { display:grid; grid-template-columns:360px 1fr; min-height:calc(100vh - 73
 .md td { padding:11px 12px; border-bottom:1px solid var(--border); vertical-align:top; font-weight:300; color:var(--text-muted); line-height:1.65; }
 .md tr:hover td { background:rgba(200,168,130,0.04); }
 .md tr:last-child td { border-bottom:none; }
+footer { border-top:1px solid var(--border); padding:14px 40px; background:var(--bg2); text-align:center; font-size:10px; font-weight:400; letter-spacing:0.14em; color:var(--text-dim); }
 ::-webkit-scrollbar { width:5px; }
 ::-webkit-scrollbar-track { background:transparent; }
 ::-webkit-scrollbar-thumb { background:var(--border2); border-radius:3px; }
@@ -95,10 +97,10 @@ main { display:grid; grid-template-columns:360px 1fr; min-height:calc(100vh - 73
 </style>
 </head>
 <body>
-<link rel="icon" type="image/x-icon" href="favicon.ico">
+
 <header>
   <div>
-    <div class="header-name">FREE ADVERSE MEDIA SCREENING</div>
+    <div class="header-name">ADVERSE MEDIA SCREENING</div>
     <div style="font-size:10px;font-weight:400;letter-spacing:0.18em;color:var(--gold-dim);margin-top:3px;text-transform:uppercase;">Tailored for Italian Individuals</div>
   </div>
   <div class="header-right">
@@ -126,20 +128,6 @@ main { display:grid; grid-template-columns:360px 1fr; min-height:calc(100vh - 73
     <div class="section-eye">Categorie di Ricerca</div>
     <div class="cat-grid" id="cat-grid"></div>
   </div>
-  <div class="divider"></div>
-  <div>
-    <div class="section-eye">Profondità Analisi</div>
-    <div class="form-group">
-      <label>Livello</label>
-      <div class="sel-wrap">
-        <select id="depth">
-          <option value="standard">Standard — Ricerca essenziale</option>
-          <option value="enhanced" selected>Enhanced — Analisi approfondita</option>
-          <option value="full">Full — Completa + fonti ufficiali</option>
-        </select>
-      </div>
-    </div>
-  </div>
   <button class="btn-run" id="btn-run" onclick="runScreening()">
     <div class="spinner" id="spinner"></div>
     <span id="btn-label">Avvia Screening</span>
@@ -162,6 +150,8 @@ main { display:grid; grid-template-columns:360px 1fr; min-height:calc(100vh - 73
   </div>
 </div>
 </main>
+
+<footer>© 2026 Donatella Dalu</footer>
 
 <script>
 // ── Il tuo Cloudflare Worker fa da proxy — la API key è sul server, non qui
@@ -192,14 +182,15 @@ function initCats(){
 }
 
 function v(id){return document.getElementById(id).value.trim();}
+function cap(s){return s.replace(/\b\w/g,c=>c.toUpperCase()).replace(/\b\w+/g,w=>w.charAt(0).toUpperCase()+w.slice(1).toLowerCase());}
 
 function buildPrompt(){
-  const nome=v('nome'),luogo=v('luogo'),res=v('res'),anno=v('anno'),cf=v('cf'),depth=v('depth');
+  const nome=cap(v('nome')),luogo=cap(v('luogo')),res=cap(v('res')),anno=v('anno'),cf=v('cf').toUpperCase();
   const cats=CATS.filter(c=>sel.has(c.id)).map(c=>c.lbl).join(', ');
-  const di=depth==='standard'?'Esegui una ricerca essenziale focalizzata sulle categorie selezionate.'
-    :depth==='enhanced'?'Esegui una ricerca approfondita con analisi incrociata per tutti i luoghi e ricerche nazionali per le categorie più gravi.'
-    :'Esegui una ricerca completa consultando tutte le fonti disponibili: ANAC, Gazzetta Ufficiale, DIA, comunicati GdF, Carabinieri, Polizia di Stato.';
-  return `Sei un assistente specializzato in adverse media screening per compliance bancaria KYC/AML.
+
+  const depthExtra='Esegui almeno 20 ricerche web distinte. Sii esaustivo: cerca ogni combinazione possibile di nome, luogo, anno, categoria. Consulta ANAC, Gazzetta Ufficiale, OpenRegio, archivi giudiziari, comunicati forze dell\'ordine.';
+
+  return `Sei un investigatore specializzato in adverse media screening per compliance bancaria KYC/AML. Il tuo compito è trovare TUTTO ciò che esiste online su questa persona. Non fermarti alla prima ricerca.
 
 SOGGETTO:
 - Nome e Cognome: ${nome}
@@ -208,7 +199,30 @@ SOGGETTO:
 - Anno di nascita: ${anno}
 - Codice Fiscale: ${cf||'non fornito'}
 
-ISTRUZIONI: ${di}
+STRATEGIA DI RICERCA OBBLIGATORIA — esegui TUTTE queste query in sequenza:
+1. "${nome}" — ricerca base
+2. "${nome}" ${luogo||''} — con luogo di nascita
+3. "${nome}" ${res||luogo||''} — con residenza
+4. "${nome}" arresto OR condanna OR indagato OR processo OR tribunale
+5. "${nome}" truffa OR frode OR bancarotta OR riciclaggio OR corruzione
+6. "${nome}" mafia OR camorra OR ndrangheta OR sacra corona OR criminalità organizzata
+7. "${nome}" fallimento OR liquidazione OR protesti OR debiti
+8. "${nome}" site:corriere.it OR site:repubblica.it OR site:ansa.it
+9. "${nome}" site:ilmattino.it OR site:lagazzettadelmezzogiorno.it OR site:quotidianodelsud.it
+10. "${nome}" giornale locale ${luogo||res||''}
+11. "${nome}" polizia OR carabinieri OR guardia di finanza OR DIA
+12. "${nome}" ANAC OR anticorruzione OR appalti
+
+${depthExtra}
+
+FONTI DA CONSULTARE OBBLIGATORIAMENTE:
+- Nazionali: Corriere della Sera, Repubblica, ANSA, Il Sole 24 Ore, La Stampa, Il Messaggero, Il Fatto Quotidiano, TgCom24, Sky TG24
+- Giudiziarie/istituzionali: ANAC (anac.it), Gazzetta Ufficiale, portale openregio, siti tribunali
+- Regionali e locali: cerca i principali giornali della regione di ${luogo||res||'provenienza'} (es. per Campania: Il Mattino, Ottopagine, NapoliToday; per Sicilia: Giornale di Sicilia, LiveSicilia; per Calabria: Gazzetta del Sud, Calabria7; per Puglia: La Gazzetta del Mezzogiorno; per Lazio: Il Messaggero, RomaToday; adatta alla regione rilevante)
+- Social e aggregatori: cerca anche su Google News, archivi storici
+
+ISTRUZIONE CRITICA SUI LINK: Per ogni risultato nella tabella, nella colonna Fonte inserisci SEMPRE il link diretto all'articolo specifico in formato Markdown: [Nome Testata](https://url-articolo-preciso). NON linkare la homepage del giornale — linka l'articolo esatto trovato.
+
 Categorie da ricercare: ${cats}.
 
 Produci il report in Markdown con questa struttura esatta:
@@ -217,17 +231,17 @@ Produci il report in Markdown con questa struttura esatta:
 Tabella con: Soggetto, Luogo di nascita, Residenza attuale, Anno di nascita (con età attuale), Codice Fiscale, Ricerca eseguita su, Data screening.
 
 ## AVVISO OMONIMIA
-Valuta la frequenza del nome e il rischio di omonimia.
+Valuta la frequenza del nome e il rischio di omonimia in Italia. Indica quante persone con questo nome risultano nei risultati.
 
 ## RISULTATI TROVATI
-Tabella colonne: #, Data, Fonte, Categoria, Descrizione, Attribuibile (✅ Sì / ❌ No — Omonimo / ⚠️ Da verificare).
-Se non trovi risultati rilevanti dichiaralo esplicitamente.
+Tabella colonne: #, Data, Fonte (link diretto all'articolo), Categoria, Descrizione sintetica del contenuto, Attribuibile (✅ Sì / ❌ No — Omonimo / ⚠️ Da verificare).
+Se non trovi nulla dopo ricerca esaustiva, dichiaralo esplicitamente specificando quante query hai eseguito.
 
 ## FALSI POSITIVI
 Ogni risultato non attribuibile con motivo preciso.
 
 ## LIMITAZIONI DELLA RICERCA
-Limitazioni metodologiche (CF mancante, data incompleta, ecc.).
+Limitazioni metodologiche (CF mancante, articoli dietro paywall, archivi non indicizzati, ecc.).
 
 ## VALUTAZIONE FINALE
 Una di queste raccomandazioni in grassetto:
@@ -235,7 +249,7 @@ Una di queste raccomandazioni in grassetto:
 **⚠️ Enhanced Due Diligence consigliata**
 **🔴 Escalare a compliance**
 **⛔ Rifiutare**
-Poi motivazione e azioni raccomandate.`;
+Poi motivazione dettagliata e azioni raccomandate.`;
 }
 
 async function runScreening(){
@@ -264,7 +278,7 @@ async function runScreening(){
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({
         model:'claude-sonnet-4-20250514',
-        max_tokens:4000,
+        max_tokens:8000,
         stream:true,
         tools:[{type:'web_search_20250305',name:'web_search'}],
         messages:[{role:'user',content:buildPrompt()}]
