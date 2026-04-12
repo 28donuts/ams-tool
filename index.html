@@ -187,69 +187,47 @@ function cap(s){return s.replace(/\b\w/g,c=>c.toUpperCase()).replace(/\b\w+/g,w=
 function buildPrompt(){
   const nome=cap(v('nome')),luogo=cap(v('luogo')),res=cap(v('res')),anno=v('anno'),cf=v('cf').toUpperCase();
   const cats=CATS.filter(c=>sel.has(c.id)).map(c=>c.lbl).join(', ');
+  const luogoRes=res||luogo||'';
 
-  const depthExtra='Esegui almeno 20 ricerche web distinte. Sii esaustivo: cerca ogni combinazione possibile di nome, luogo, anno, categoria. Consulta ANAC, Gazzetta Ufficiale, OpenRegio, archivi giudiziari, comunicati forze dell\'ordine.';
+  return `Sei un esperto AML/KYC. Esegui adverse media screening su:
+Nome: ${nome} | Nato: ${anno}${luogo?' a '+luogo:''} | ${res?'Residente: '+res+' | ':''} CF: ${cf||'n.d.'} | Categorie: ${cats}
 
-  return `Sei un investigatore specializzato in adverse media screening per compliance bancaria KYC/AML. Il tuo compito è trovare TUTTO ciò che esiste online su questa persona. Non fermarti alla prima ricerca.
+RICERCHE DA ESEGUIRE (10 query mirate, solo fonti gratuite):
+1. "${nome}"
+2. "${nome}" ${luogoRes}
+3. "${nome}" indagato OR arrestato OR condannato OR processo
+4. "${nome}" truffa OR frode OR riciclaggio OR corruzione OR bancarotta
+5. "${nome}" mafia OR camorra OR ndrangheta OR criminalità
+6. "${nome}" fallimento OR protesti OR debiti
+7. "${nome}" ANAC OR appalti OR PA
+8. "${nome}" site:ansa.it OR site:ilfattoquotidiano.it OR site:tg24.sky.it
+9. "${nome}" ${luogoRes} notizie OR cronaca
+10. "${nome}" polizia OR carabinieri OR GdF
 
-SOGGETTO:
-- Nome e Cognome: ${nome}
-- Luogo di nascita: ${luogo||'non fornito'}
-- Residenza attuale: ${res||'non fornita'}
-- Anno di nascita: ${anno}
-- Codice Fiscale: ${cf||'non fornito'}
+Fonti: ANSA, Il Fatto Quotidiano, Sky TG24, TgCom24, Fanpage, portali locali *Today, ANAC, Gazzetta Ufficiale. NO paywall.
+Link: nella colonna Fonte, se hai l'URL diretto dell'articolo usa [Testata](url), altrimenti scrivi solo il nome della testata in testo semplice. Non inventare URL.
 
-STRATEGIA DI RICERCA OBBLIGATORIA — esegui TUTTE queste query in sequenza:
-1. "${nome}" — ricerca base
-2. "${nome}" ${luogo||''} — con luogo di nascita
-3. "${nome}" ${res||luogo||''} — con residenza
-4. "${nome}" arresto OR condanna OR indagato OR processo OR tribunale
-5. "${nome}" truffa OR frode OR bancarotta OR riciclaggio OR corruzione
-6. "${nome}" mafia OR camorra OR ndrangheta OR sacra corona OR criminalità organizzata
-7. "${nome}" fallimento OR liquidazione OR protesti OR debiti
-8. "${nome}" site:corriere.it OR site:repubblica.it OR site:ansa.it
-9. "${nome}" site:ilmattino.it OR site:lagazzettadelmezzogiorno.it OR site:quotidianodelsud.it
-10. "${nome}" giornale locale ${luogo||res||''}
-11. "${nome}" polizia OR carabinieri OR guardia di finanza OR DIA
-12. "${nome}" ANAC OR anticorruzione OR appalti
-
-${depthExtra}
-
-FONTI DA CONSULTARE OBBLIGATORIAMENTE:
-- Nazionali: Corriere della Sera, Repubblica, ANSA, Il Sole 24 Ore, La Stampa, Il Messaggero, Il Fatto Quotidiano, TgCom24, Sky TG24
-- Giudiziarie/istituzionali: ANAC (anac.it), Gazzetta Ufficiale, portale openregio, siti tribunali
-- Regionali e locali: cerca i principali giornali della regione di ${luogo||res||'provenienza'} (es. per Campania: Il Mattino, Ottopagine, NapoliToday; per Sicilia: Giornale di Sicilia, LiveSicilia; per Calabria: Gazzetta del Sud, Calabria7; per Puglia: La Gazzetta del Mezzogiorno; per Lazio: Il Messaggero, RomaToday; adatta alla regione rilevante)
-- Social e aggregatori: cerca anche su Google News, archivi storici
-
-ISTRUZIONE CRITICA SUI LINK: Per ogni risultato nella tabella, nella colonna Fonte inserisci SEMPRE il link diretto all'articolo specifico in formato Markdown: [Nome Testata](https://url-articolo-preciso). NON linkare la homepage del giornale — linka l'articolo esatto trovato.
-
-Categorie da ricercare: ${cats}.
-
-Produci il report in Markdown con questa struttura esatta:
+Rispondi in Markdown:
 
 ## ADVERSE MEDIA REPORT
-Tabella con: Soggetto, Luogo di nascita, Residenza attuale, Anno di nascita (con età attuale), Codice Fiscale, Ricerca eseguita su, Data screening.
+Tabella: Soggetto | Luogo nascita | Residenza | Anno (età) | CF | Data screening
 
 ## AVVISO OMONIMIA
-Valuta la frequenza del nome e il rischio di omonimia in Italia. Indica quante persone con questo nome risultano nei risultati.
+Breve valutazione rischio omonimia.
 
 ## RISULTATI TROVATI
-Tabella colonne: #, Data, Fonte (link diretto all'articolo), Categoria, Descrizione sintetica del contenuto, Attribuibile (✅ Sì / ❌ No — Omonimo / ⚠️ Da verificare).
-Se non trovi nulla dopo ricerca esaustiva, dichiaralo esplicitamente specificando quante query hai eseguito.
+Tabella: # | Data | Fonte | Categoria | Descrizione | Attribuibile (✅/❌/⚠️)
+Se nessun risultato, dichiaralo.
 
 ## FALSI POSITIVI
-Ogni risultato non attribuibile con motivo preciso.
+Solo risultati non attribuibili con motivo.
 
-## LIMITAZIONI DELLA RICERCA
-Limitazioni metodologiche (CF mancante, articoli dietro paywall, archivi non indicizzati, ecc.).
+## LIMITAZIONI
+Max 3 righe sulle limitazioni metodologiche.
 
 ## VALUTAZIONE FINALE
-Una di queste raccomandazioni in grassetto:
-**✅ Nessun red flag attribuibile**
-**⚠️ Enhanced Due Diligence consigliata**
-**🔴 Escalare a compliance**
-**⛔ Rifiutare**
-Poi motivazione dettagliata e azioni raccomandate.`;
+Una riga in grassetto: **✅ Nessun red flag** / **⚠️ Enhanced Due Diligence** / **🔴 Escalare a compliance** / **⛔ Rifiutare**
+Motivazione breve.`;
 }
 
 async function runScreening(){
@@ -278,7 +256,7 @@ async function runScreening(){
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({
         model:'claude-sonnet-4-20250514',
-        max_tokens:8000,
+        max_tokens:4000,
         stream:true,
         tools:[{type:'web_search_20250305',name:'web_search'}],
         messages:[{role:'user',content:buildPrompt()}]
