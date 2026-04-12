@@ -189,42 +189,26 @@ function buildPrompt(){
   const cats=CATS.filter(c=>sel.has(c.id)).map(c=>c.lbl).join(', ');
   const luogoRes=res||luogo||'';
 
-  return `Sei un esperto AML/KYC. Esegui adverse media screening su:
-Nome: ${nome} | Nato: ${anno}${luogo?' a '+luogo:''} | ${res?'Residente: '+res+' | ':''} CF: ${cf||'n.d.'} | Categorie: ${cats}
+  return `AML/KYC screening. Soggetto: ${nome}, ${anno}${luogo?', '+luogo:''}${res?', residente '+res:''}, CF: ${cf||'n.d.'}. Categorie: ${cats}.
 
-RICERCHE DA ESEGUIRE (10 query mirate, solo fonti gratuite):
-1. "${nome}"
-2. "${nome}" ${luogoRes}
-3. "${nome}" indagato OR arrestato OR condannato OR processo
-4. "${nome}" truffa OR frode OR riciclaggio OR corruzione OR bancarotta
-5. "${nome}" mafia OR camorra OR ndrangheta OR criminalità
-6. "${nome}" fallimento OR protesti OR debiti
-7. "${nome}" ANAC OR appalti OR PA
-8. "${nome}" site:ansa.it OR site:ilfattoquotidiano.it OR site:tg24.sky.it
-9. "${nome}" ${luogoRes} notizie OR cronaca
-10. "${nome}" polizia OR carabinieri OR GdF
+Cerca online (fonti .it gratuite: ANSA, IlFatto, SkyTG24, portali *Today, ANAC, GazzettaUfficiale) combinando il nome con: ${luogoRes?luogoRes+', ':''}termini giudiziari (indagato/arrestato/condannato), reati (truffa/frode/riciclaggio/corruzione/mafia/camorra/ndrangheta/bancarotta/fallimento), PA/appalti/ANAC, forze ordine. Min 8 ricerche distinte.
 
-Fonti: ANSA, Il Fatto Quotidiano, Sky TG24, TgCom24, Fanpage, portali locali *Today, ANAC, Gazzetta Ufficiale. NO paywall.
-Link: nella colonna Fonte, se hai l'URL diretto dell'articolo usa [Testata](url), altrimenti scrivi solo il nome della testata in testo semplice. Non inventare URL.
-
-Rispondi in Markdown:
+Fonte: [Testata](url) se hai l'URL diretto, altrimenti solo nome testata. No URL inventati.
 
 ## AVVISO OMONIMIA
-Breve valutazione rischio omonimia.
+1 riga.
 
 ## RISULTATI TROVATI
-Tabella: # | Data | Fonte | Categoria | Descrizione | Attribuibile (✅/❌/⚠️)
-Se nessun risultato, dichiaralo.
+# | Data | Fonte | Categoria | Descrizione | ✅/❌/⚠️
 
 ## FALSI POSITIVI
-Tabella: # | Fonte (link se disponibile, altrimenti nome testata) | Descrizione | Motivo esclusione
+# | Fonte | Descrizione | Motivo
 
 ## LIMITAZIONI
-Max 3 righe sulle limitazioni metodologiche.
+Max 2 righe.
 
 ## VALUTAZIONE FINALE
-Una riga in grassetto: **✅ Nessun red flag** / **⚠️ Enhanced Due Diligence** / **🔴 Escalare a compliance** / **⛔ Rifiutare**
-Motivazione breve.`;
+**✅ Nessun red flag** / **⚠️ Enhanced Due Diligence** / **🔴 Escalare a compliance** / **⛔ Rifiutare** + 1 riga motivazione.`;
 }
 
 async function runScreening(){
