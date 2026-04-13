@@ -98,9 +98,16 @@ footer { border-top:1px solid var(--border); padding:14px 40px; background:var(-
 </head>
 <body>
 
+<style>
+.beta-badge { display:inline-block; font-size:8px; font-weight:600; letter-spacing:0.18em; text-transform:uppercase; color:var(--bg); background:var(--gold-dim); border-radius:3px; padding:2px 7px; margin-left:10px; vertical-align:middle; }
+.beta-banner { background:rgba(200,168,130,0.07); border-bottom:1px solid var(--border); padding:10px 40px; display:flex; align-items:center; gap:10px; }
+.beta-banner-dot { width:5px; height:5px; border-radius:50%; background:var(--gold-dim); flex-shrink:0; }
+.beta-banner-text { font-size:10px; font-weight:400; letter-spacing:0.12em; color:var(--text-muted); }
+</style>
+
 <header>
   <div>
-    <div class="header-name">ADVERSE MEDIA SCREENING</div>
+    <div class="header-name">ADVERSE MEDIA SCREENING <span class="beta-badge">Beta</span></div>
     <div style="font-size:10px;font-weight:400;letter-spacing:0.18em;color:var(--gold-dim);margin-top:3px;text-transform:uppercase;">Tailored for Italian Individuals</div>
   </div>
   <div class="header-right">
@@ -110,6 +117,11 @@ footer { border-top:1px solid var(--border); padding:14px 40px; background:var(-
     </div>
   </div>
 </header>
+
+<div class="beta-banner">
+  <div class="beta-banner-dot"></div>
+  <span class="beta-banner-text">Beta version — This service is under active development. Results may be incomplete or inaccurate. Do not use as the sole source for compliance decisions.</span>
+</div>
 
 <main>
 <aside class="sidebar">
