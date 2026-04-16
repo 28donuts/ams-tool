@@ -199,11 +199,9 @@ function cap(s){return s.replace(/\b\w/g,c=>c.toUpperCase()).replace(/\b\w+/g,w=
 function buildSystem(){
   return `Sei un esperto AML/KYC. Esegui adverse media screening su soggetti italiani.
 
-REGOLA CRITICA: includi un risultato SOLO se il nome del soggetto compare esplicitamente nella fonte. Se l'articolo parla di un'altra persona, anche solo citata insieme al soggetto, ignoralo completamente.
+REGOLA CRITICA: includi un risultato SOLO se il nome del soggetto compare esplicitamente nella fonte. Se l'articolo parla di un'altra persona ignoralo completamente.
 
-Cerca online (fonti .it gratuite: ANSA, IlFatto, SkyTG24, portali *Today, ANAC, GazzettaUfficiale) combinando il nome con: luogo, termini giudiziari (indagato/arrestato/condannato), reati (truffa/frode/riciclaggio/corruzione/mafia/camorra/ndrangheta/bancarotta/fallimento), PA/appalti/ANAC, forze ordine. Min 8 ricerche distinte.
-
-LINK OBBLIGATORI: per ogni risultato trovato tramite web search, nella colonna Fonte inserisci SEMPRE il link diretto all'articolo in formato Markdown [Nome Testata](url). Se non hai l'URL esatto scrivi solo il nome della testata. Non inventare URL.
+LINK OBBLIGATORI: nella colonna Fonte inserisci sempre [Nome Testata](url) se hai l'URL diretto, altrimenti solo il nome della testata. Non inventare URL.
 
 Rispondi in Markdown:
 
@@ -223,12 +221,81 @@ Max 2 righe.
 **✅ Nessun red flag** / **⚠️ Enhanced Due Diligence** / **🔴 Escalare a compliance** / **⛔ Rifiutare** + 1 riga motivazione.`;
 }
 
+function getLocalSites(luogo){
+  if(!luogo) return '';
+  const l=luogo.toLowerCase();
+  const regions={
+    campania:['napoli','salerno','caserta','avellino','benevento','pozzuoli','castellammare','torre del greco','ercolano','portici','afragola','giugliano'],
+    sicilia:['palermo','catania','messina','siracusa','trapani','agrigento','caltanissetta','enna','ragusa','marsala','gela','vittoria'],
+    calabria:['reggio calabria','catanzaro','cosenza','vibo valentia','crotone','lamezia','rende'],
+    puglia:['bari','taranto','foggia','lecce','brindisi','andria','barletta','trani','altamura','molfetta'],
+    lazio:['roma','frosinone','latina','rieti','viterbo','tivoli','guidonia','civitavecchia','velletri'],
+    lombardia:['milano','brescia','bergamo','monza','como','pavia','varese','cremona','lecco','lodi','mantova','sondrio'],
+    veneto:['venezia','verona','padova','vicenza','treviso','rovigo','belluno','mestre','chioggia'],
+    piemonte:['torino','alessandria','asti','cuneo','novara','vercelli','biella','verbania'],
+    emiliaromagna:['bologna','modena','parma','reggio emilia','ferrara','rimini','ravenna','forlì','piacenza','cesena'],
+    toscana:['firenze','prato','livorno','siena','arezzo','pistoia','lucca','grosseto','massa','pisa'],
+    marche:['ancona','pesaro','macerata','fermo','ascoli piceno'],
+    abruzzo:['pescara','chieti','teramo','l\'aquila','lanciano'],
+    sardegna:['cagliari','sassari','nuoro','oristano','olbia','quartu'],
+    liguria:['genova','la spezia','savona','imperia','sanremo'],
+    umbria:['perugia','terni','foligno'],
+    basilicata:['potenza','matera'],
+    molise:['campobasso','isernia'],
+    friuli:['trieste','udine','pordenone','gorizia'],
+    trentinoaltoadige:['trento','bolzano','merano','rovereto'],
+    valledaosta:['aosta']
+  };
+  const sitemap={
+    campania:'site:napolitoday.it OR site:ottopagine.it OR site:casertanews.it OR site:salernotoday.it OR site:internapoli.it OR site:vesuviolive.it OR site:cronachedellacampania.it OR site:teleclubitalia.it OR site:agro24.it OR site:ilmattinodipozzuoli.it',
+    sicilia:'site:livesicilia.it OR site:palermotoday.it OR site:cataniatoday.it OR site:siracusaoggi.it OR site:blogsicilia.it OR site:trapaniok.it OR site:agrigentooggi.it OR site:ragusanews.com OR site:messinaora.it OR site:lasiciliaweb.it OR site:ilsicilia.it',
+    calabria:'site:calabria7.it OR site:reggiotv.it OR site:catanzaroinforma.it OR site:lacnews24.it OR site:cn24tv.it OR site:strettoweb.com OR site:calabriapost.net OR site:cosenzapost.it OR site:vibonese.it OR site:corrieredellacalabria.it',
+    puglia:'site:baritoday.it OR site:foggiatoday.it OR site:lecceprima.it OR site:brindisireport.it OR site:tarantooggi.it OR site:noinotizie.it OR site:andriaviva.it OR site:puglialive.net OR site:barlettaviva.it OR site:lagazzettadelmezzogiorno.it OR site:trnews.it',
+    lazio:'site:romatoday.it OR site:ilfaroonline.it OR site:latinatoday.it OR site:frosinonetoday.it OR site:tusciaweb.eu OR site:rietinforma.it OR site:ciociariaoggi.it OR site:ilcorrieredellacitta.it OR site:lacittadiviterbo.it OR site:ilmessaggero.it',
+    lombardia:'site:milanotoday.it OR site:bresciatoday.it OR site:bergamotoday.it OR site:monzatoday.it OR site:comotoday.it OR site:varesenews.it OR site:laprovinciadicomo.it OR site:lecconotizie.com OR site:paviaoggi.it OR site:cremonaoggi.it OR site:ogginotizie.it',
+    veneto:'site:veneziatoday.it OR site:veronasera.it OR site:padovaoggi.it OR site:trevisotoday.it OR site:vicenzatoday.it OR site:rovigooggi.it OR site:bellunotoday.it OR site:nordest24.it OR site:oggitreviso.it OR site:ilgiornaledivicenza.it',
+    piemonte:'site:torinotoday.it OR site:alessandrianews.it OR site:cuneodice.it OR site:novaratoday.it OR site:astigov.it OR site:biellacronaca.it OR site:lavocediasti.it OR site:targatocn.it OR site:verbanonews.it OR site:ilpiemonte.it',
+    emiliaromagna:'site:bolognotoday.it OR site:modenatoday.it OR site:parmadaily.it OR site:riminitoday.it OR site:ferraraitalia.it OR site:ravennawebtv.it OR site:forlitoday.it OR site:ilrestodelcarlino.it OR site:reggioreport.it OR site:piacenzasera.it',
+    toscana:'site:firenzetoday.it OR site:livornotoday.it OR site:sienafree.it OR site:arezzonotizie.it OR site:pisatoday.it OR site:grossetonotizie.com OR site:pistoianotizie.it OR site:luccaindiretta.it OR site:pratooggi.it OR site:lanazione.it',
+    marche:'site:anconatoday.it OR site:pesaronotizie.it OR site:maceratanotizie.it OR site:cronachefermane.it OR site:ascolionline.it OR site:viveremacerata.it OR site:ilrestodelcarlino.it OR site:centropagina.it',
+    abruzzo:'site:pescaranotizie.net OR site:chietitoday.it OR site:abruzzoweb.it OR site:ilpescara.it OR site:laquilablog.it OR site:vastooggi.it OR site:lancianooggi.it OR site:abruzzonews.eu OR site:ilcentro.it',
+    sardegna:'site:cagliarionline.com OR site:sassarinotizie.com OR site:sardegnareporter.it OR site:olbiatempio.it OR site:nuorooggi.it OR site:unionesarda.it OR site:sardegnalive.net OR site:lanuovasardegna.it',
+    liguria:'site:genovatoday.it OR site:ivg.it OR site:cittadellaspezia.com OR site:sanremonews.it OR site:imperianotizie.it OR site:ligurianotizie.it OR site:savonanews.it OR site:primocanale.it',
+    umbria:'site:perugiatoday.it OR site:umbriaon.it OR site:umbrianotizie.net OR site:ternitoday.it OR site:tuttoggi.info OR site:ilmessaggero.it OR site:corrieredellumbria.it',
+    basilicata:'site:basilicatanet.it OR site:sassilive.it OR site:potenzatoday.it OR site:basilicatanotizie.com OR site:lagazzettadelmezzogiorno.it OR site:lucaniaweb.com',
+    molise:'site:primonumero.it OR site:moliseweb.com OR site:iserniaweb.it OR site:molise24.eu OR site:molisenetwork.it',
+    friuli:'site:triesteprima.it OR site:udinetoday.it OR site:messaggeroveneto.it OR site:pordenonoggi.it OR site:ilfriuli.it OR site:gorizianews.it OR site:nordest24.it',
+    trentinoaltoadige:'site:trentotoday.it OR site:altoadige.it OR site:trentinocorriere.it OR site:ladige.it OR site:trentinooggi.it OR site:bressanoneoggi.it',
+    valledaosta:'site:aostasera.it OR site:aostaoggi.it OR site:lavalleedaoste.it OR site:corrieredellacalabria.it'
+  };
+  for(const [region, cities] of Object.entries(regions)){
+    if(cities.some(c=>l.includes(c))) return sitemap[region]||'';
+  }
+  return '';
+}
+
 function buildPrompt(){
   const nome=cap(v('nome')),luogo=cap(v('luogo')),res=cap(v('res')),anno=v('anno'),cf=v('cf').toUpperCase();
   const cats=CATS.filter(c=>sel.has(c.id)).map(c=>c.lbl).join(', ');
-  const luogoRes=res||luogo||'';
 
-  return `Soggetto: ${nome}, ${anno}${luogo?', '+luogo:''}${res?', residente '+res:''}, CF: ${cf||'n.d.'}. Categorie: ${cats}.${luogoRes?' Luogo di riferimento per le ricerche: '+luogoRes+'.':''}`;
+  const localSites1=getLocalSites(luogo);
+  const localSites2=getLocalSites(res&&res!==luogo?res:'');
+  const localQuery=[
+    localSites1?`\n6. "${nome}" ${localSites1}`:'',
+    localSites2?`\n7. "${nome}" ${localSites2}`:''
+  ].join('');
+
+  return `Soggetto: ${nome}, nato ${anno}${luogo?' a '+luogo:''}${res&&res!==luogo?', residente a '+res:''}${cf?' CF '+cf:''}.
+Categorie richieste: ${cats}.
+
+Esegui ESATTAMENTE queste ricerche, niente di più:
+1. "${nome}"${luogoQ} indagato OR arrestato OR condannato OR processo
+2. "${nome}"${luogoQ} truffa OR frode OR riciclaggio OR corruzione OR bancarotta
+3. "${nome}"${luogoQ} mafia OR camorra OR ndrangheta OR criminalità OR droga OR spaccio
+4. "${nome}"${luogoQ} ANAC OR appalti OR fallimento OR protesti
+5. "${nome}"${luogoQ} polizia OR carabinieri OR "guardia di finanza"${localQuery}
+
+Per ogni ricerca leggi solo i primi 3 risultati. Fonti gratuite .it preferite.`;
 }
 
 async function runScreening(){
