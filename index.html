@@ -199,6 +199,8 @@ function cap(s){return s.replace(/\b\w/g,c=>c.toUpperCase()).replace(/\b\w+/g,w=
 function buildSystem(){
   return `Sei un esperto AML/KYC. Esegui adverse media screening su soggetti italiani.
 
+IMPORTANTE: inizia la risposta direttamente con ## AVVISO OMONIMIA — nessun testo introduttivo, nessuna conferma delle istruzioni ricevute, nessun riepilogo del soggetto.
+
 REGOLA CRITICA: includi un risultato SOLO se il nome del soggetto compare esplicitamente nella fonte. Se l'articolo parla di un'altra persona ignoralo completamente.
 
 LINK OBBLIGATORI: per ogni riga nelle tabelle RISULTATI TROVATI e FALSI POSITIVI, la colonna Fonte DEVE contenere il link diretto all'articolo in formato [Nome Testata](https://url-esatto-articolo). L'URL deve puntare alla pagina specifica dell'articolo, non alla homepage. Se durante la web search non hai recuperato l'URL esatto di quell'articolo, NON inserire la riga — omettila completamente. Mai scrivere solo il nome della testata senza link.
@@ -287,9 +289,6 @@ function buildPrompt(){
 
   const luoghi=[luogo,res].filter(Boolean);
   const luogoQ=luoghi.length?' '+luoghi.join(' OR '):'';
-
-  console.log('buildPrompt luogoQ:', luogoQ);
-  console.log('buildPrompt localQuery:', localQuery);
 
   return `Soggetto: ${nome}, nato ${anno}${luogo?' a '+luogo:''}${res&&res!==luogo?', residente a '+res:''}${cf?' CF '+cf:''}.
 Categorie richieste: ${cats}.
