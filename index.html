@@ -285,6 +285,9 @@ function buildPrompt(){
     localSites2?`\n7. "${nome}" ${localSites2}`:''
   ].join('');
 
+  const luoghi=[luogo,res].filter(Boolean);
+  const luogoQ=luoghi.length?' '+luoghi.join(' OR '):'';
+
   return `Soggetto: ${nome}, nato ${anno}${luogo?' a '+luogo:''}${res&&res!==luogo?', residente a '+res:''}${cf?' CF '+cf:''}.
 Categorie richieste: ${cats}.
 
