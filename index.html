@@ -196,18 +196,16 @@ function initCats(){
 function v(id){return document.getElementById(id).value.trim();}
 function cap(s){return s.replace(/\b\w/g,c=>c.toUpperCase()).replace(/\b\w+/g,w=>w.charAt(0).toUpperCase()+w.slice(1).toLowerCase());}
 
-function buildPrompt(){
-  const nome=cap(v('nome')),luogo=cap(v('luogo')),res=cap(v('res')),anno=v('anno'),cf=v('cf').toUpperCase();
-  const cats=CATS.filter(c=>sel.has(c.id)).map(c=>c.lbl).join(', ');
-  const luogoRes=res||luogo||'';
+function buildSystem(){
+  return `Sei un esperto AML/KYC. Esegui adverse media screening su soggetti italiani.
 
-  return `AML/KYC screening. Soggetto: ${nome}, ${anno}${luogo?', '+luogo:''}${res?', residente '+res:''}, CF: ${cf||'n.d.'}. Categorie: ${cats}.
+REGOLA CRITICA: includi un risultato SOLO se il nome del soggetto compare esplicitamente nella fonte. Se l'articolo parla di un'altra persona, anche solo citata insieme al soggetto, ignoralo completamente.
 
-REGOLA CRITICA: includi un risultato SOLO se il nome "${nome}" compare esplicitamente nella fonte. Se l'articolo parla di un'altra persona, anche solo citata insieme al soggetto, ignoralo completamente — non inserirlo né nei risultati né nei falsi positivi.
-
-Cerca online (fonti .it gratuite: ANSA, IlFatto, SkyTG24, portali *Today, ANAC, GazzettaUfficiale) combinando il nome con: ${luogoRes?luogoRes+', ':''}termini giudiziari (indagato/arrestato/condannato), reati (truffa/frode/riciclaggio/corruzione/mafia/camorra/ndrangheta/bancarotta/fallimento), PA/appalti/ANAC, forze ordine. Min 8 ricerche distinte.
+Cerca online (fonti .it gratuite: ANSA, IlFatto, SkyTG24, portali *Today, ANAC, GazzettaUfficiale) combinando il nome con: luogo, termini giudiziari (indagato/arrestato/condannato), reati (truffa/frode/riciclaggio/corruzione/mafia/camorra/ndrangheta/bancarotta/fallimento), PA/appalti/ANAC, forze ordine. Min 8 ricerche distinte.
 
 Fonte: [Testata](url) se hai l'URL diretto, altrimenti solo nome testata. No URL inventati.
+
+Rispondi in Markdown:
 
 ## AVVISO OMONIMIA
 1 riga.
@@ -223,6 +221,14 @@ Max 2 righe.
 
 ## VALUTAZIONE FINALE
 **✅ Nessun red flag** / **⚠️ Enhanced Due Diligence** / **🔴 Escalare a compliance** / **⛔ Rifiutare** + 1 riga motivazione.`;
+}
+
+function buildPrompt(){
+  const nome=cap(v('nome')),luogo=cap(v('luogo')),res=cap(v('res')),anno=v('anno'),cf=v('cf').toUpperCase();
+  const cats=CATS.filter(c=>sel.has(c.id)).map(c=>c.lbl).join(', ');
+  const luogoRes=res||luogo||'';
+
+  return `Soggetto: ${nome}, ${anno}${luogo?', '+luogo:''}${res?', residente '+res:''}, CF: ${cf||'n.d.'}. Categorie: ${cats}.${luogoRes?' Luogo di riferimento per le ricerche: '+luogoRes+'.':''}`;
 }
 
 async function runScreening(){
@@ -253,6 +259,7 @@ async function runScreening(){
         model:'claude-sonnet-4-20250514',
         max_tokens:4000,
         stream:true,
+        system:[{type:'text',text:buildSystem(),cache_control:{type:'ephemeral'}}],
         tools:[{type:'web_search_20250305',name:'web_search'}],
         messages:[{role:'user',content:buildPrompt()}]
       })
