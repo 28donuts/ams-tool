@@ -288,6 +288,9 @@ function buildPrompt(){
   const luoghi=[luogo,res].filter(Boolean);
   const luogoQ=luoghi.length?' '+luoghi.join(' OR '):'';
 
+  console.log('buildPrompt luogoQ:', luogoQ);
+  console.log('buildPrompt localQuery:', localQuery);
+
   return `Soggetto: ${nome}, nato ${anno}${luogo?' a '+luogo:''}${res&&res!==luogo?', residente a '+res:''}${cf?' CF '+cf:''}.
 Categorie richieste: ${cats}.
 
