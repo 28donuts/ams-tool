@@ -89,7 +89,9 @@ main { display:grid; grid-template-columns:360px 1fr; min-height:calc(100vh - 73
 .md td { padding:11px 12px; border-bottom:1px solid var(--border); vertical-align:top; font-weight:300; color:var(--text-muted); line-height:1.65; }
 .md tr:hover td { background:rgba(200,168,130,0.04); }
 .md tr:last-child td { border-bottom:none; }
-footer { border-top:1px solid var(--border); padding:14px 40px; background:var(--bg2); text-align:center; font-size:10px; font-weight:400; letter-spacing:0.14em; color:var(--text-dim); }
+footer { border-top:1px solid var(--border); padding:20px 40px; background:var(--bg2); color:var(--text-dim); }
+.footer-top { text-align:center; font-size:10px; font-weight:400; letter-spacing:0.14em; margin-bottom:12px; }
+.footer-legal { font-size:9px; font-weight:300; line-height:1.8; color:var(--text-dim); max-width:900px; margin:0 auto; text-align:center; opacity:0.7; }
 ::-webkit-scrollbar { width:5px; }
 ::-webkit-scrollbar-track { background:transparent; }
 ::-webkit-scrollbar-thumb { background:var(--border2); border-radius:3px; }
@@ -163,7 +165,12 @@ footer { border-top:1px solid var(--border); padding:14px 40px; background:var(-
 </div>
 </main>
 
-<footer>© 2026 Donatella Dalu</footer>
+<footer>
+  <div class="footer-top">© 2026 Donatella Dalu — Adverse Media Screening Tool</div>
+  <div class="footer-legal">
+    This tool aggregates publicly available information from open-access online sources solely for the purpose of supporting Anti-Money Laundering (AML) and Know Your Customer (KYC) due diligence obligations, as required under applicable legislation including EU Directive 2015/849 (AMLD) and Italian Legislative Decree 231/2007. It does not create, store, or share personal profiles. Search results are generated in real time and are not retained after the session ends. This tool is intended exclusively for use by authorised compliance professionals within regulated financial institutions. Results are indicative only and do not constitute legal, investigative, or professional advice. The operator of this tool accepts no liability for the accuracy, completeness, or timeliness of results, nor for any decisions made on the basis thereof. Users are solely responsible for ensuring that their use of this tool complies with applicable data protection laws, including the EU General Data Protection Regulation (GDPR) and national implementing legislation.
+  </div>
+</footer>
 
 <script>
 // ── Il tuo Cloudflare Worker fa da proxy — la API key è sul server, non qui
