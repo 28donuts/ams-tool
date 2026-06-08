@@ -9,10 +9,10 @@
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
-  --bg:#201F25; --bg2:#2a2930; --bg3:#33313b;
-  --gold:#c8a882; --gold-dim:#a08060; --gold-pale:#e8d5bc;
-  --text:#eae6e1; --text-muted:#928b80; --text-dim:#524d47;
-  --border:rgba(200,168,130,0.13); --border2:rgba(200,168,130,0.26);
+  --bg:#0e0e10; --bg2:#161618; --bg3:#1f1f22;
+  --gold:#c0bdb8; --gold-dim:#8a8782; --gold-pale:#e8e6e3;
+  --text:#eaeaea; --text-muted:#888888; --text-dim:#505050;
+  --border:rgba(255,255,255,0.08); --border2:rgba(255,255,255,0.14);
   --serif:'Playfair Display',Georgia,serif;
   --sans:'Jost',system-ui,sans-serif;
 }
@@ -89,9 +89,9 @@ main { display:grid; grid-template-columns:360px 1fr; min-height:calc(100vh - 73
 .md td { padding:11px 12px; border-bottom:1px solid var(--border); vertical-align:top; font-weight:300; color:var(--text-muted); line-height:1.65; }
 .md tr:hover td { background:rgba(200,168,130,0.04); }
 .md tr:last-child td { border-bottom:none; }
-footer { border-top:1px solid var(--border); padding:20px 40px; background:var(--bg2); color:var(--text-dim); }
-.footer-top { text-align:center; font-size:10px; font-weight:400; letter-spacing:0.14em; margin-bottom:12px; }
-.footer-legal { font-size:9px; font-weight:300; line-height:1.8; color:var(--text-dim); max-width:900px; margin:0 auto; text-align:center; opacity:0.7; }
+footer { border-top:1px solid var(--border2); padding:28px 40px; background:var(--bg3); color:var(--text-muted); }
+.footer-top { text-align:center; font-size:10px; font-weight:500; letter-spacing:0.2em; text-transform:uppercase; margin-bottom:16px; color:var(--gold); }
+.footer-legal { font-size:9.5px; font-weight:300; line-height:1.9; color:var(--text-muted); max-width:960px; margin:0 auto; text-align:center; }
 ::-webkit-scrollbar { width:5px; }
 ::-webkit-scrollbar-track { background:transparent; }
 ::-webkit-scrollbar-thumb { background:var(--border2); border-radius:3px; }
@@ -110,7 +110,7 @@ footer { border-top:1px solid var(--border); padding:20px 40px; background:var(-
 <header>
   <div>
     <div class="header-name">ADVERSE MEDIA SCREENING <span class="beta-badge">Beta</span></div>
-    <div style="font-size:10px;font-weight:400;letter-spacing:0.18em;color:var(--gold-dim);margin-top:3px;text-transform:uppercase;">Tailored for Italian Individuals</div>
+    <div style="font-size:10px;font-weight:400;letter-spacing:0.18em;color:var(--gold-dim);margin-top:3px;text-transform:uppercase;">Designed for KYC/AML Screening of Italian Individuals — Natural Persons Only</div>
   </div>
   <div class="header-right">
     <div class="status-pill">
@@ -128,38 +128,38 @@ footer { border-top:1px solid var(--border); padding:20px 40px; background:var(-
 <main>
 <aside class="sidebar">
   <div>
-    <div class="section-eye">Dati Soggetto</div>
+    <div class="section-eye">Subject Data</div>
     <div class="form-fields">
-      <div class="form-group"><label>Nome e Cognome *</label><input type="text" id="nome" placeholder="es. Mario Rossi" /></div>
-      <div class="form-group"><label>Luogo di Nascita *</label><input type="text" id="luogo" placeholder="es. Napoli" /></div>
-      <div class="form-group"><label>Residenza Attuale</label><input type="text" id="res" placeholder="se diversa dal luogo di nascita" /></div>
-      <div class="form-group"><label>Anno di Nascita *</label><input type="text" id="anno" placeholder="es. 1973" maxlength="4" /></div>
-      <div class="form-group"><label>Codice Fiscale</label><input type="text" id="cf" placeholder="Raccomandato per verifica univoca" style="text-transform:uppercase" /></div>
+      <div class="form-group"><label>Full Name *</label><input type="text" id="nome" placeholder="e.g. Mario Rossi" /></div>
+      <div class="form-group"><label>Place of Birth *</label><input type="text" id="luogo" placeholder="e.g. Napoli" /></div>
+      <div class="form-group"><label>Current Residence</label><input type="text" id="res" placeholder="if different from place of birth" /></div>
+      <div class="form-group"><label>Year of Birth *</label><input type="text" id="anno" placeholder="e.g. 1973" maxlength="4" /></div>
+      <div class="form-group"><label>Codice Fiscale</label><input type="text" id="cf" placeholder="Recommended for unique identification" style="text-transform:uppercase" /></div>
     </div>
   </div>
   <div class="divider"></div>
   <div>
-    <div class="section-eye">Categorie di Ricerca</div>
+    <div class="section-eye">Search Categories</div>
     <div class="cat-grid" id="cat-grid"></div>
   </div>
   <button class="btn-run" id="btn-run" onclick="runScreening()">
     <div class="spinner" id="spinner"></div>
-    <span id="btn-label">Avvia Screening</span>
+    <span id="btn-label">Run Screening</span>
   </button>
 </aside>
 
 <div class="output-panel">
   <div class="output-toolbar">
-    <span class="tb-title" id="tb-title">In attesa di ricerca</span>
+    <span class="tb-title" id="tb-title">Awaiting search</span>
     <span class="tb-id" id="tb-id">—</span>
-    <button class="btn-sm" id="btn-copy" onclick="doCopy()" style="display:none">Copia</button>
-    <button class="btn-sm" id="btn-export" onclick="doExport()" style="display:none">Esporta</button>
+    <button class="btn-sm" id="btn-copy" onclick="doCopy()" style="display:none">Copy</button>
+    <button class="btn-sm" id="btn-export" onclick="doExport()" style="display:none">Export</button>
   </div>
   <div class="output-content" id="out">
     <div class="empty-state">
       <div class="empty-eye">Adverse Media Screening — KYC / AML</div>
-      <div class="empty-title" style="font-size:28px;">Garantire la corretta applicazione delle procedure.</div>
-      <div class="empty-body">Inserisci i dati del soggetto nel pannello a sinistra e avvia lo screening per generare il report AML completo.</div>
+      <div class="empty-title" style="font-size:28px;">Italian-focused adverse media screening for individual persons.</div>
+      <div class="empty-body">Enter the subject's details in the left panel and run the screening to generate a full AML adverse media report. This tool searches Italian public news sources, institutional databases, and regional press.</div>
     </div>
   </div>
 </div>
@@ -173,19 +173,19 @@ footer { border-top:1px solid var(--border); padding:20px 40px; background:var(-
 </footer>
 
 <script>
-// ── Il tuo Cloudflare Worker fa da proxy — la API key è sul server, non qui
+// ── Your Cloudflare Worker acts as proxy — the API key is server-side, not here
 const PROXY = 'https://ams.donatelladalu.workers.dev';
 
 const CATS=[
-  {id:'mafia',lbl:'Criminalità organizzata',c:'#e05555'},
-  {id:'droga',lbl:'Droga & traffici',c:'#e07a30'},
-  {id:'fin',lbl:'Reati finanziari',c:'#c8a430'},
-  {id:'corr',lbl:'Corruzione & PA',c:'#c8a430'},
-  {id:'proc',lbl:'Procedimenti legali',c:'#6090c8'},
-  {id:'fall',lbl:'Fallimenti & crisi',c:'#6090c8'},
-  {id:'terr',lbl:'Terrorismo & sicurezza',c:'#808080'},
-  {id:'sanc',lbl:'Sanzioni & liste PEP',c:'#a070c0'},
-  {id:'rep',lbl:'Reputazione & stampa',c:'#a08060'},
+  {id:'mafia',lbl:'Organised Crime',c:'#e05555'},
+  {id:'droga',lbl:'Drug Trafficking',c:'#e07a30'},
+  {id:'fin',lbl:'Financial Crime',c:'#c8a430'},
+  {id:'corr',lbl:'Corruption & Public Admin',c:'#c8a430'},
+  {id:'proc',lbl:'Legal Proceedings',c:'#6090c8'},
+  {id:'fall',lbl:'Insolvency & Bankruptcy',c:'#6090c8'},
+  {id:'terr',lbl:'Terrorism & Security',c:'#808080'},
+  {id:'sanc',lbl:'Sanctions & PEP Lists',c:'#a070c0'},
+  {id:'rep',lbl:'Reputation & Press',c:'#a08060'},
 ];
 let sel=new Set(CATS.map(c=>c.id)),lastMd='',rid='';
 
@@ -311,9 +311,9 @@ Per ogni ricerca leggi solo i primi 3 risultati. Fonti gratuite .it preferite.`;
 }
 
 async function runScreening(){
-  if(!v('nome')){alert('Inserire nome e cognome.');return;}
-  if(!v('anno')){alert('Inserire anno di nascita.');return;}
-  if(sel.size===0){alert('Selezionare almeno una categoria.');return;}
+  if(!v('nome')){alert('Please enter the subject\'s full name.');return;}
+  if(!v('anno')){alert('Please enter the year of birth.');return;}
+  if(sel.size===0){alert('Please select at least one search category.');return;}
 
   const btn=document.getElementById('btn-run'),spin=document.getElementById('spinner'),lbl=document.getElementById('btn-label');
   btn.disabled=true; spin.style.display='block'; lbl.textContent='Analisi in corso…';
@@ -323,7 +323,7 @@ async function runScreening(){
   document.getElementById('btn-export').style.display='none';
 
   const out=document.getElementById('out');
-  out.innerHTML=`<div><div class="progress-wrap"><div class="progress-bar" id="pbar"></div></div><div class="stream-block" id="stream">Connessione in corso…<span class="cursor"></span></div></div>`;
+  out.innerHTML=`<div><div class="progress-wrap"><div class="progress-bar" id="pbar"></div></div><div class="stream-block" id="stream">Connecting…<span class="cursor"></span></div></div>`;
 
   let prog=0;
   const pbar=document.getElementById('pbar');
@@ -365,15 +365,15 @@ async function runScreening(){
       out.innerHTML=`<div class="report md">${md2html(full)}</div>`;
       document.getElementById('btn-copy').style.display='';
       document.getElementById('btn-export').style.display='';
-      btn.disabled=false;spin.style.display='none';lbl.textContent='Avvia Screening';
+      btn.disabled=false;spin.style.display='none';lbl.textContent='Run Screening';
     },500);
   }catch(err){
     clearInterval(tick);
     out.innerHTML=`<div style="background:rgba(180,60,60,0.1);border:1px solid rgba(180,60,60,0.22);border-radius:5px;padding:24px 28px;margin-top:16px">
-      <p style="font-size:9px;letter-spacing:0.2em;text-transform:uppercase;color:#c07070;margin-bottom:8px;font-weight:600">Errore API</p>
+      <p style="font-size:9px;letter-spacing:0.2em;text-transform:uppercase;color:#c07070;margin-bottom:8px;font-weight:600">API Error</p>
       <p style="font-size:13px;color:#e8a0a0;font-weight:300">${esc(err.message)}</p>
     </div>`;
-    btn.disabled=false;spin.style.display='none';lbl.textContent='Avvia Screening';
+    btn.disabled=false;spin.style.display='none';lbl.textContent='Run Screening';
   }
 }
 
@@ -416,7 +416,7 @@ function doCopy(){
   if(!lastMd)return;
   navigator.clipboard.writeText(lastMd).then(()=>{
     const b=document.getElementById('btn-copy');
-    b.textContent='Copiato!';setTimeout(()=>b.textContent='Copia',2000);
+    b.textContent='Copied!';setTimeout(()=>b.textContent='Copy',2000);
   });
 }
 
